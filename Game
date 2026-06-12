@@ -1,0 +1,12 @@
+Welcome to Guess Number!
+Choose difficulty: 1) Easy (1-50, 15 tries) 2) Medium (1-100, 10 tries) 3) Hard (1-200, 8 tries)
+> 2
+I'm thinking of a number between 1 and 100. You have 10 attempts.
+Attempt 1/10: 50
+Too low!
+Attempt 2/10: 75
+Too high!
+...
+Congratulations! You guessed in 5 attempts!
+Best score: 5 attempts
+Play again? (y/n):
