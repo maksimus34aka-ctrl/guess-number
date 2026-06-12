@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Guess Number - JS</title>
+    <style>
+        body { background: #1a1a2e; color: #0f0; font-family: monospace; text-align: center; margin-top: 50px; }
+        .container { max-width: 500px; margin: auto; background: #16213e; padding: 20px; border-radius: 10px; }
+        input, button { padding: 8px; margin: 5px; font-size: 16px; }
+        #message { margin-top: 20px; color: #ffcc00; }
+        #attempts, #best { margin: 10px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Guess the Number</h1>
+    <div>
+        <label>Difficulty: </label>
+        <select id="difficulty">
+            <option value="easy">Easy (1-50, 15 attempts)</option>
+            <option value="medium" selected>Medium (1-100, 10 attempts)</option>
+            <option value="hard">Hard (1-200, 8 attempts)</option>
+        </select>
+        <button id="newGameBtn">New Game</button>
+    </div>
+    <div id="gameArea">
+        <p id="info"></p>
+        <input type="number" id="guessInput" placeholder="Your guess" autofocus>
+        <button id="guessBtn">Guess</button>
+        <div id="message"></div>
+        <div id="attempts"></div>
+        <div id="best"></div>
+    </div>
+</div>
+<script src="guess.js"></script>
+</body>
+</html>
