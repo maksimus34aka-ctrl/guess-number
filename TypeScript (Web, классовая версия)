@@ -1,0 +1,118 @@
+interface DifficultyConfig {
+    low: number;
+    high: number;
+    maxAttempts: number;
+}
+
+class GuessNumberGame {
+    private secret: number;
+    private low: number;
+    private high: number;
+    private maxAttempts: number;
+    private attempts: number;
+    private best: number | null;
+    private gameActive: boolean;
+
+    private difficultyMap: Record<string, DifficultyConfig> = {
+        easy:   { low: 1, high: 50,  maxAttempts: 15 },
+        medium: { low: 1, high: 100, maxAttempts: 10 },
+        hard:   { low: 1, high: 200, maxAttempts: 8 }
+    };
+
+    constructor() {
+        this.best = null;
+        this.initUI();
+        this.newGame();
+    }
+
+    private initUI(): void {
+        const container = document.createElement("div");
+        container.innerHTML = `
+            <h1>Guess the Number</h1>
+            <div><label>Difficulty: </label>
+            <select id="difficultySelect">
+                <option value="easy">Easy (1-50, 15 attempts)</option>
+                <option value="medium" selected>Medium (1-100, 10 attempts)</option>
+                <option value="hard">Hard (1-200, 8 attempts)</option>
+            </select>
+            <button id="newGameBtn">New Game</button></div>
+            <div id="info"></div>
+            <input type="number" id="guessInput" placeholder="Your guess" autofocus>
+            <button id="guessBtn">Guess</button>
+            <div id="message"></div>
+            <div id="attempts"></div>
+            <div id="best"></div>
+        `;
+        document.body.appendChild(container);
+        document.getElementById("newGameBtn")!.addEventListener("click", () => this.newGame());
+        document.getElementById("guessBtn")!.addEventListener("click", () => this.guess());
+        document.getElementById("guessInput")!.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") this.guess();
+        });
+    }
+
+    newGame(): void {
+        const diff = (document.getElementById("difficultySelect") as HTMLSelectElement).value;
+        const cfg = this.difficultyMap[diff];
+        this.low = cfg.low;
+        this.high = cfg.high;
+        this.maxAttempts = cfg.maxAttempts;
+        this.secret = Math.floor(Math.random() * (this.high - this.low + 1)) + this.low;
+        this.attempts = 0;
+        this.gameActive = true;
+        (document.getElementById("info")!).innerHTML = `I'm thinking of a number between ${this.low} and ${this.high}. You have ${this.maxAttempts} attempts.`;
+        (document.getElementById("message")!).innerHTML = "";
+        (document.getElementById("attempts")!).innerHTML = `Attempts used: 0 / ${this.maxAttempts}`;
+        (document.getElementById("guessInput") as HTMLInputElement).value = "";
+        (document.getElementById("guessInput") as HTMLInputElement).disabled = false;
+        (document.getElementById("guessBtn") as HTMLButtonElement).disabled = false;
+        this.updateBestDisplay();
+    }
+
+    private updateBestDisplay(): void {
+        const bestDiv = document.getElementById("best")!;
+        if (this.best !== null) bestDiv.innerHTML = `🏆 Best score: ${this.best} attempts`;
+        else bestDiv.innerHTML = `🏆 Best score: —`;
+    }
+
+    guess(): void {
+        if (!this.gameActive) return;
+        const input = document.getElementById("guessInput") as HTMLInputElement;
+        const guess = parseInt(input.value);
+        if (isNaN(guess)) {
+            (document.getElementById("message")!).innerHTML = "Please enter a number.";
+            return;
+        }
+        if (guess < this.low || guess > this.high) {
+            (document.getElementById("message")!).innerHTML = `Number must be between ${this.low} and ${this.high}.`;
+            return;
+        }
+        this.attempts++;
+        (document.getElementById("attempts")!).innerHTML = `Attempts used: ${this.attempts} / ${this.maxAttempts}`;
+        if (guess === this.secret) {
+            (document.getElementById("message")!).innerHTML = `🎉 Congratulations! You guessed it in ${this.attempts} attempts! 🎉`;
+            if (this.best === null || this.attempts < this.best) {
+                this.best = this.attempts;
+                this.updateBestDisplay();
+                (document.getElementById("message")!).innerHTML += `<br>✨ New best score! ✨`;
+            }
+            this.gameActive = false;
+            input.disabled = true;
+            (document.getElementById("guessBtn") as HTMLButtonElement).disabled = true;
+        } else if (guess < this.secret) {
+            (document.getElementById("message")!).innerHTML = "📉 Too low!";
+        } else {
+            (document.getElementById("message")!).innerHTML = "📈 Too high!";
+        }
+        if (this.attempts >= this.maxAttempts && guess !== this.secret) {
+            (document.getElementById("message")!).innerHTML = `😞 Out of attempts! The number was ${this.secret}.`;
+            this.gameActive = false;
+            input.disabled = true;
+            (document.getElementById("guessBtn") as HTMLButtonElement).disabled = true;
+        }
+        input.value = "";
+        input.focus();
+    }
+}
+
+new GuessNumberGame();
