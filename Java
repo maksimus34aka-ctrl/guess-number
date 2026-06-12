@@ -1,0 +1,74 @@
+import java.util.Scanner;
+import java.util.Random;
+
+public class GuessNumber {
+    private static Random rand = new Random();
+    private static int best = 0;
+
+    private static int[] getDifficulty(Scanner scanner) {
+        System.out.println("\nChoose difficulty:");
+        System.out.println("1. Easy (1-50, 15 attempts)");
+        System.out.println("2. Medium (1-100, 10 attempts)");
+        System.out.println("3. Hard (1-200, 8 attempts)");
+        while (true) {
+            System.out.print("> ");
+            String choice = scanner.nextLine();
+            switch (choice) {
+                case "1": return new int[]{1, 50, 15};
+                case "2": return new int[]{1, 100, 10};
+                case "3": return new int[]{1, 200, 8};
+                default: System.out.println("Invalid choice. Enter 1, 2, or 3.");
+            }
+        }
+    }
+
+    private static void play(Scanner scanner) {
+        int[] diff = getDifficulty(scanner);
+        int low = diff[0], high = diff[1], maxAttempts = diff[2];
+        int secret = rand.nextInt(high - low + 1) + low;
+        int attempts = 0;
+
+        System.out.printf("\nI'm thinking of a number between %d and %d. You have %d attempts.\n", low, high, maxAttempts);
+        while (attempts < maxAttempts) {
+            System.out.printf("Attempt %d/%d: ", attempts+1, maxAttempts);
+            int guess;
+            try {
+                guess = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number.");
+                continue;
+            }
+            if (guess < low || guess > high) {
+                System.out.printf("Number must be between %d and %d.\n", low, high);
+                continue;
+            }
+            attempts++;
+            if (guess == secret) {
+                System.out.printf("Congratulations! You guessed it in %d attempts.\n", attempts);
+                if (best == 0 || attempts < best) {
+                    best = attempts;
+                    System.out.printf("New best score: %d attempts!\n", best);
+                }
+                break;
+            } else if (guess < secret) {
+                System.out.println("Too low!");
+            } else {
+                System.out.println("Too high!");
+            }
+        }
+        if (attempts == maxAttempts) {
+            System.out.printf("Sorry, you've used all attempts. The number was %d.\n", secret);
+        }
+        System.out.printf("Best score this session: %s\n", (best == 0 ? "N/A" : best));
+        System.out.print("Play again? (y/n): ");
+        String again = scanner.nextLine().toLowerCase();
+        if (again.equals("y")) play(scanner);
+        else System.out.println("Thanks for playing!");
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        play(scanner);
+        scanner.close();
+    }
+}
