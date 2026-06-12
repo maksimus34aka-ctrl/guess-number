@@ -1,0 +1,71 @@
+using System;
+
+class GuessNumber
+{
+    static Random rand = new Random();
+    static int best = 0;
+
+    static (int low, int high, int maxAttempts) GetDifficulty()
+    {
+        Console.WriteLine("\nChoose difficulty:");
+        Console.WriteLine("1. Easy (1-50, 15 attempts)");
+        Console.WriteLine("2. Medium (1-100, 10 attempts)");
+        Console.WriteLine("3. Hard (1-200, 8 attempts)");
+        while (true)
+        {
+            Console.Write("> ");
+            string choice = Console.ReadLine();
+            switch (choice)
+            {
+                case "1": return (1, 50, 15);
+                case "2": return (1, 100, 10);
+                case "3": return (1, 200, 8);
+                default: Console.WriteLine("Invalid choice. Enter 1, 2, or 3."); break;
+            }
+        }
+    }
+
+    static void Play()
+    {
+        var (low, high, maxAttempts) = GetDifficulty();
+        int secret = rand.Next(low, high + 1);
+        int attempts = 0;
+
+        Console.WriteLine($"\nI'm thinking of a number between {low} and {high}. You have {maxAttempts} attempts.");
+        while (attempts < maxAttempts)
+        {
+            Console.Write($"Attempt {attempts+1}/{maxAttempts}: ");
+            if (!int.TryParse(Console.ReadLine(), out int guess))
+            {
+                Console.WriteLine("Please enter a valid number.");
+                continue;
+            }
+            if (guess < low || guess > high)
+            {
+                Console.WriteLine($"Number must be between {low} and {high}.");
+                continue;
+            }
+            attempts++;
+            if (guess == secret)
+            {
+                Console.WriteLine($"Congratulations! You guessed it in {attempts} attempts.");
+                if (best == 0 || attempts < best)
+                {
+                    best = attempts;
+                    Console.WriteLine($"New best score: {best} attempts!");
+                }
+                break;
+            }
+            else if (guess < secret) Console.WriteLine("Too low!");
+            else Console.WriteLine("Too high!");
+        }
+        if (attempts == maxAttempts) Console.WriteLine($"Sorry, you've used all attempts. The number was {secret}.");
+        Console.WriteLine($"Best score this session: {(best == 0 ? "N/A" : best.ToString())}");
+        Console.Write("Play again? (y/n): ");
+        string again = Console.ReadLine().ToLower();
+        if (again == "y") Play();
+        else Console.WriteLine("Thanks for playing!");
+    }
+
+    static void Main() => Play();
+}
