@@ -1,0 +1,62 @@
+
+
+### 1. Python (консоль, с рекордами и выбором **`python/guess.py`**
+
+```python
+import random
+import sys
+
+def get_difficulty():
+    print("\nChoose difficulty:")
+    print("1. Easy (1-50, 15 attempts)")
+    print("2. Medium (1-100, 10 attempts)")
+    print("3. Hard (1-200, 8 attempts)")
+    while True:
+        choice = input("> ").strip()
+        if choice == "1":
+            return 1, 50, 15
+        elif choice == "2":
+            return 1, 100, 10
+        elif choice == "3":
+            return 1, 200, 8
+        else:
+            print("Invalid choice, please select 1, 2, or 3.")
+
+def play():
+    low, high, max_attempts = get_difficulty()
+    secret = random.randint(low, high)
+    attempts = 0
+    best = None
+
+    print(f"\nI'm thinking of a number between {low} and {high}. You have {max_attempts} attempts.")
+    while attempts < max_attempts:
+        try:
+            guess = int(input(f"Attempt {attempts+1}/{max_attempts}: "))
+        except ValueError:
+            print("Please enter a valid number.")
+            continue
+        if guess < low or guess > high:
+            print(f"Number must be between {low} and {high}.")
+            continue
+        attempts += 1
+        if guess == secret:
+            print(f"Congratulations! You guessed it in {attempts} attempts.")
+            if best is None or attempts < best:
+                best = attempts
+                print(f"New best score: {best} attempts!")
+            break
+        elif guess < secret:
+            print("Too low!")
+        else:
+            print("Too high!")
+    else:
+        print(f"Sorry, you've used all attempts. The number was {secret}.")
+    print(f"Best score this session: {best if best else 'N/A'}")
+    again = input("Play again? (y/n): ").strip().lower()
+    if again == 'y':
+        play()
+    else:
+        print("Thanks for playing!")
+
+if __name__ == "__main__":
+    play()
